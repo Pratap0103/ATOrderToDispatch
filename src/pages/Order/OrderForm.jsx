@@ -127,7 +127,7 @@ const OrderForm = ({ isOpen, onClose, onSave, orders = [] }) => {
     qc: '',
     orderType: '',
     karigarDeliveryDate: '',
-    orderStage: 'New',
+    orderStage: '',
     deliveryLocation: '',
     images: [],
   };
@@ -157,15 +157,14 @@ const OrderForm = ({ isOpen, onClose, onSave, orders = [] }) => {
   const [orderStages, setOrderStages] = useState(() => {
     const saved = localStorage.getItem('master_order_stages');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      if (!parsed.some(s => s.stage === 'New')) {
-        parsed.unshift({ id: 'OS-000', stage: 'New', timestamp: '2026-06-01T08:00:00' });
+      let parsed = JSON.parse(saved);
+      if (parsed.some(s => s.stage === 'New')) {
+        parsed = parsed.filter(s => s.stage !== 'New');
         localStorage.setItem('master_order_stages', JSON.stringify(parsed));
       }
       return parsed;
     }
     const defaults = [
-      { id: 'OS-000', stage: 'New',                  timestamp: '2026-06-01T08:00:00' },
       { id: 'OS-001', stage: 'Pending',              timestamp: '2026-06-01T08:00:00' },
       { id: 'OS-002', stage: 'In Process',            timestamp: '2026-06-01T08:15:00' },
       { id: 'OS-003', stage: 'Ready for Delivery',    timestamp: '2026-06-01T08:30:00' },
@@ -219,15 +218,14 @@ const OrderForm = ({ isOpen, onClose, onSave, orders = [] }) => {
       }
       const savedStages = localStorage.getItem('master_order_stages');
       if (savedStages) {
-        const parsed = JSON.parse(savedStages);
-        if (!parsed.some(s => s.stage === 'New')) {
-          parsed.unshift({ id: 'OS-000', stage: 'New', timestamp: '2026-06-01T08:00:00' });
+        let parsed = JSON.parse(savedStages);
+        if (parsed.some(s => s.stage === 'New')) {
+          parsed = parsed.filter(s => s.stage !== 'New');
           localStorage.setItem('master_order_stages', JSON.stringify(parsed));
         }
         setOrderStages(parsed);
       } else {
         const defaults = [
-          { id: 'OS-000', stage: 'New',                  timestamp: '2026-06-01T08:00:00' },
           { id: 'OS-001', stage: 'Pending',              timestamp: '2026-06-01T08:00:00' },
           { id: 'OS-002', stage: 'In Process',            timestamp: '2026-06-01T08:15:00' },
           { id: 'OS-003', stage: 'Ready for Delivery',    timestamp: '2026-06-01T08:30:00' },
