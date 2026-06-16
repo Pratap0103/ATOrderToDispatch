@@ -26,6 +26,11 @@ export default function Master() {
   // Per-view filter states lifted here so Master toolbar can clear them
   const [companyFilters, setCompanyFilters] = useState({ companyName: [], location: [], emailDomain: [] });
   const [karigarTypeFilter, setKarigarTypeFilter] = useState([]);
+  const [deliveryFilter, setDeliveryFilter] = useState([]);
+  const [stageFilter, setStageFilter] = useState([]);
+  const [categoryFilter, setCategoryFilter] = useState([]);
+  const [subcategoryFilter, setSubcategoryFilter] = useState([]);
+  const [meltingFilter, setMeltingFilter] = useState([]);
 
   const currentView = VIEWS.find(v => v.id === activeView);
 
@@ -33,6 +38,11 @@ export default function Master() {
     setSearchQuery('');
     setCompanyFilters({ companyName: [], location: [], emailDomain: [] });
     setKarigarTypeFilter([]);
+    setDeliveryFilter([]);
+    setStageFilter([]);
+    setCategoryFilter([]);
+    setSubcategoryFilter([]);
+    setMeltingFilter([]);
     setShowMobileFilters(false);
   };
 
@@ -154,6 +164,8 @@ export default function Master() {
             {activeView === 'delivery' && (
               <DeliveryLocation
                 searchQuery={searchQuery}
+                filterValue={deliveryFilter}
+                onFilterChange={setDeliveryFilter}
                 onClearFilters={handleClearFilters}
                 filtersOnly={true}
               />
@@ -161,6 +173,8 @@ export default function Master() {
             {activeView === 'orderstage' && (
               <OrderStage
                 searchQuery={searchQuery}
+                filterValue={stageFilter}
+                onFilterChange={setStageFilter}
                 onClearFilters={handleClearFilters}
                 filtersOnly={true}
               />
@@ -168,6 +182,8 @@ export default function Master() {
             {activeView === 'category' && (
               <Category
                 searchQuery={searchQuery}
+                filterValue={categoryFilter}
+                onFilterChange={setCategoryFilter}
                 onClearFilters={handleClearFilters}
                 filtersOnly={true}
               />
@@ -175,6 +191,8 @@ export default function Master() {
             {activeView === 'subcategory' && (
               <Subcategory
                 searchQuery={searchQuery}
+                filterValue={subcategoryFilter}
+                onFilterChange={setSubcategoryFilter}
                 onClearFilters={handleClearFilters}
                 filtersOnly={true}
               />
@@ -182,6 +200,8 @@ export default function Master() {
             {activeView === 'melting' && (
               <Melting
                 searchQuery={searchQuery}
+                filterValue={meltingFilter}
+                onFilterChange={setMeltingFilter}
                 onClearFilters={handleClearFilters}
                 filtersOnly={true}
               />
@@ -221,30 +241,40 @@ export default function Master() {
       {activeView === 'delivery' && (
         <DeliveryLocation
           searchQuery={searchQuery}
+          filterValue={deliveryFilter}
+          onFilterChange={setDeliveryFilter}
           onClearFilters={handleClearFilters}
         />
       )}
       {activeView === 'orderstage' && (
         <OrderStage
           searchQuery={searchQuery}
+          filterValue={stageFilter}
+          onFilterChange={setStageFilter}
           onClearFilters={handleClearFilters}
         />
       )}
       {activeView === 'category' && (
         <Category
           searchQuery={searchQuery}
+          filterValue={categoryFilter}
+          onFilterChange={setCategoryFilter}
           onClearFilters={handleClearFilters}
         />
       )}
       {activeView === 'subcategory' && (
         <Subcategory
           searchQuery={searchQuery}
+          filterValue={subcategoryFilter}
+          onFilterChange={setSubcategoryFilter}
           onClearFilters={handleClearFilters}
         />
       )}
       {activeView === 'melting' && (
         <Melting
           searchQuery={searchQuery}
+          filterValue={meltingFilter}
+          onFilterChange={setMeltingFilter}
           onClearFilters={handleClearFilters}
         />
       )}

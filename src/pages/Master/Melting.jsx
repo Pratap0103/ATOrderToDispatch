@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Plus, Search, RotateCcw, Flame, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Search, RotateCcw, Flame, Trash2, Edit2, Filter } from 'lucide-react';
 import DataTable from '../../components/DataTable';
 import ModalForm from '../../components/ModalForm';
+import SearchableDropdown from '../../components/SearchableDropdown';
 
 export const SEEDED_MELTING = [
   { id: 'MELT-001', melting: '18K', ghatMelting: '75.20', timestamp: '2026-06-01T08:00:00.000Z' },
@@ -26,6 +27,8 @@ export default function Melting({
   searchQuery: externalSearch,
   onClearFilters,
   filtersOnly = false,
+  filterValue,
+  onFilterChange,
 }) {
   const isEmbedded = externalSearch !== undefined;
 
@@ -60,10 +63,14 @@ export default function Melting({
   const [editMelting, setEditMelting]     = useState({ id: '', ...EMPTY_FORM });
 
   const [localSearch, setLocalSearch] = useState('');
+  const [localFilterMelting, setLocalFilterMelting] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50);
 
   const effectiveSearch = isEmbedded ? (externalSearch || '') : localSearch;
+  const filterMelting = filterValue !== undefined ? filterValue : localFilterMelting;
+  const setFilterMelting = onFilterChange || setLocalFilterMelting;
+  const meltingOptions = useMemo(() => window.generateFilterOptions ? window.generateFilterOptions(meltingList, 'melting') : [], [meltingList]);
 
   const persist = (data) => {
     setMeltingList(data);
@@ -125,18 +132,20 @@ export default function Melting({
 
   const handleClearFilters = () => {
     setLocalSearch('');
+    setFilterMelting([]);
     if (isEmbedded) onClearFilters?.();
     else toast.success('Filters cleared');
     setCurrentPage(1);
   };
 
   const filtered = useMemo(() => meltingList.filter(m => {
+    if (filterMelting.length > 0 && !filterMelting.includes(m.melting)) return false;
     if (effectiveSearch) {
       const q = effectiveSearch.toLowerCase();
       return m.melting.toLowerCase().includes(q);
     }
     return true;
-  }), [meltingList, effectiveSearch]);
+  }), [meltingList, effectiveSearch, filterMelting]);
 
   const totalPages  = Math.ceil(filtered.length / itemsPerPage);
   const paginated   = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -305,9 +314,21 @@ export default function Melting({
   if (filtersOnly) {
     return (
       <>
+        <div className="flex-1 min-w-0 lg:min-w-[160px] relative">
+          <SearchableDropdown
+            options={meltingOptions}
+            isMulti={true}
+            value={filterMelting}
+            onChange={setFilterMelting}
+            placeholder="All Melting"
+            className="h-[32px] md:h-[38px]"
+            height="h-[32px] md:h-[38px]"
+            rounded="rounded-lg"
+          />
+        </div>
         <button
           onClick={handleClearFilters}
-          className="hidden lg:flex items-center justify-center bg-gray-50 text-gray-500 border border-gray-200 rounded-lg w-[38px] h-[38px] hover:bg-gray-100 transition-colors shadow-sm"
+          className="hidden lg:flex items-center justify-center bg-gray-50 text-gray-500 border border-gray-200 rounded-lg w-[38px] h-[38px] hover:bg-gray-100 transition-colors shadow-sm flex-shrink-0"
           title="Clear Filters"
         >
           <RotateCcw size={16} />
@@ -325,31 +346,45 @@ export default function Melting({
       {/* Standalone toolbar */}
       {!isEmbedded && (
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-2 lg:gap-4 w-full px-2 sm:px-0">
-          <div className="flex items-center gap-2 w-full lg:w-auto lg:flex-[1.5]">
-            <div className="flex-1 w-full relative">
-              <Search className="absolute left-2.5 top-[9px] lg:top-[11px] text-gray-400" size={14} />
-              <input
-                type="text"
-                placeholder="Search melting values..."
-                value={localSearch}
-                onChange={e => setLocalSearch(e.target.value)}
-                className="w-full bg-white border border-gray-300 rounded-lg pl-8 pr-2 py-1.5 focus:outline-none focus:border-amber-500 text-xs md:text-sm h-[32px] md:h-[38px]"
+          <div className="flex flex-col lg:flex-row w-full gap-2 lg:gap-3 items-center lg:flex-1">
+            <div className="flex items-center gap-2 w-full lg:w-auto lg:flex-[1.5]">
+              <div className="flex-1 w-full relative">
+                <Search className="absolute left-2.5 top-[9px] lg:top-[11px] text-gray-400" size={14} />
+                <input
+                  type="text"
+                  placeholder="Search melting values..."
+                  value={localSearch}
+                  onChange={e => setLocalSearch(e.target.value)}
+                  className="w-full bg-white border border-gray-300 rounded-lg pl-8 pr-2 py-1.5 focus:outline-none focus:border-amber-500 text-xs md:text-sm h-[32px] md:h-[38px]"
+                />
+              </div>
+              <button
+                onClick={handleClearFilters}
+                className="flex items-center justify-center bg-gray-50 text-gray-500 border border-gray-200 rounded-lg h-[32px] w-[32px] flex-shrink-0 shadow-sm active:scale-95 lg:hidden"
+                title="Clear Filters"
+              >
+                <RotateCcw size={14} />
+              </button>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="lg:hidden flex items-center justify-center bg-amber-600 text-white rounded-lg h-[32px] w-[32px] flex-shrink-0 shadow-sm active:scale-95"
+                title="Add Melting"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+            <div className="w-full lg:w-[250px] relative">
+              <SearchableDropdown
+                options={meltingOptions}
+                isMulti={true}
+                value={filterMelting}
+                onChange={setFilterMelting}
+                placeholder="All Melting"
+                className="h-[32px] md:h-[38px]"
+                height="h-[32px] md:h-[38px]"
+                rounded="rounded-lg"
               />
             </div>
-            <button
-              onClick={handleClearFilters}
-              className="flex items-center justify-center bg-gray-50 text-gray-500 border border-gray-200 rounded-lg h-[32px] w-[32px] flex-shrink-0 shadow-sm active:scale-95 lg:hidden"
-              title="Clear Filters"
-            >
-              <RotateCcw size={14} />
-            </button>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="lg:hidden flex items-center justify-center bg-amber-600 text-white rounded-lg h-[32px] w-[32px] flex-shrink-0 shadow-sm active:scale-95"
-              title="Add Melting"
-            >
-              <Plus size={16} />
-            </button>
           </div>
           <button
             onClick={handleClearFilters}
