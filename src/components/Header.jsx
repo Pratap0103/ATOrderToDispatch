@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Search, User, Menu, Settings } from 'lucide-react';
+import { Bell, Search, User, Menu } from 'lucide-react';
 
 const Header = ({ onMenuClick, user }) => {
   return (
@@ -18,10 +18,6 @@ const Header = ({ onMenuClick, user }) => {
 
         {/* Right Section: Actions & Profile */}
         <div className="flex items-center gap-2 sm:gap-4">
-
-          <button className="p-2 text-amber-600 hover:bg-amber-100 rounded-lg transition-all">
-            <Settings size={20} />
-          </button>
 
           <div className="h-8 w-px bg-amber-200 mx-1 hidden sm:block"></div>
 

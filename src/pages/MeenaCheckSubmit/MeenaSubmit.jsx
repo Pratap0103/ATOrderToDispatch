@@ -73,7 +73,6 @@ const MeenaSubmit = () => {
   const activeBaseOrders = activeTab === 'pending' ? basePendingOrders : baseHistoryOrders;
 
   // Dropdown lists
-  const generateFilterOptions = () => [];
   const categoriesList = useMemo(() => generateFilterOptions(activeBaseOrders, o => o.category), [activeBaseOrders]);
   const karigarsList = useMemo(() => generateFilterOptions(activeBaseOrders, o => o.karigar || o.karigarName), [activeBaseOrders]);
   const meltingList = useMemo(() => generateFilterOptions(activeBaseOrders, o => o.melting), [activeBaseOrders]);

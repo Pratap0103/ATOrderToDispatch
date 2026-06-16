@@ -34,7 +34,24 @@ window.getUsers = () => {
 window.saveUsers = (users) => {
   localStorage.setItem('users', JSON.stringify(users));
 };
-window.generateFilterOptions = () => [];
+window.generateFilterOptions = (data, accessor) => {
+  if (!Array.isArray(data)) return [];
+  const counts = {};
+  data.forEach(item => {
+    let val;
+    if (typeof accessor === 'function') {
+      val = accessor(item);
+    } else if (typeof accessor === 'string') {
+      val = item[accessor];
+    }
+    if (val !== undefined && val !== null && val !== '') {
+      counts[val] = (counts[val] || 0) + 1;
+    }
+  });
+  return Object.keys(counts)
+    .sort()
+    .map(key => ({ value: key, label: key, count: counts[key] }));
+};
 window.saveOrderAndSyncPlannedDates = async () => {};
 window.preventInvalidDecimalChars = () => {};
 window.getSidebarPendingCounts = () => ({});
