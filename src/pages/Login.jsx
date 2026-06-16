@@ -47,6 +47,18 @@ const Login = () => {
   };
 
   const handleDemoCredential = (userId) => {
+    try {
+      const users = getUsers();
+      const found = users.find((u) => u.id === userId);
+      if (found) {
+        setId(found.id);
+        setPassword(found.password);
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
     if (userId === 'admin') {
       setId('admin');
       setPassword('admin123');

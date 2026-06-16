@@ -17,19 +17,69 @@ window.formatTargetDate = (dateString) => {
 window.getOrderTypeColor = () => "transparent";
 window.getUsers = () => {
   const saved = localStorage.getItem('users');
+  let users = [];
   if (saved) {
     try {
-      return JSON.parse(saved);
+      users = JSON.parse(saved);
     } catch (e) {}
   }
-  return [{
-    id: 'admin',
-    name: 'Admin User',
-    password: '123',
-    role: 'ADMIN',
-    accessPages: [],
-    weekOff: 'Sunday'
-  }];
+  
+  if (!Array.isArray(users) || users.length === 0) {
+    users = [
+      {
+        id: 'admin',
+        name: 'Admin User',
+        password: 'admin123',
+        role: 'ADMIN',
+        accessPages: [],
+        weekOff: 'Sunday'
+      },
+      {
+        id: 'user',
+        name: 'Demo User',
+        password: 'user123',
+        role: 'USER',
+        accessPages: [],
+        weekOff: 'Sunday'
+      }
+    ];
+    localStorage.setItem('users', JSON.stringify(users));
+  } else {
+    let modified = false;
+    let adminUser = users.find(u => u.id === 'admin');
+    if (!adminUser) {
+      users.push({
+        id: 'admin',
+        name: 'Admin User',
+        password: 'admin123',
+        role: 'ADMIN',
+        accessPages: [],
+        weekOff: 'Sunday'
+      });
+      modified = true;
+    } else if (adminUser.password === '123') {
+      adminUser.password = 'admin123';
+      modified = true;
+    }
+    
+    let regularUser = users.find(u => u.id === 'user');
+    if (!regularUser) {
+      users.push({
+        id: 'user',
+        name: 'Demo User',
+        password: 'user123',
+        role: 'USER',
+        accessPages: [],
+        weekOff: 'Sunday'
+      });
+      modified = true;
+    }
+    
+    if (modified) {
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+  }
+  return users;
 };
 window.saveUsers = (users) => {
   localStorage.setItem('users', JSON.stringify(users));
